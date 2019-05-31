@@ -1,0 +1,50 @@
+
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'simple_web'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: ''
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    ports:
+      - '3306:3306'
+    volumes:
+      - my-db:/var/lib/mysql
+
+  web2:
+    build:
+      context: web2
+    restart: always
+    environment:
+      EMAIL_SERVER_PORT: 'service:50053'
+      FLASK_ENV: 'development'
+    volumes:
+      - .:/code
+    ports:
+      - "5000:5000"
+    command: >
+      sh -c "cd web2 &&
+             python3 app.py"
+
+  service:
+    build:
+      context: email_service
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - .:/code
+    ports:
+      - "50053:50053"
+    depends_on:
+      - mysql
+    command: >
+      sh -c "cd email_service &&
+             python3 serve.py"
+
+volumes:
+  my-db:

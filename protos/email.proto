@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option optimize_for = SPEED;
+
+package core.email;
+
+service Email {
+  rpc SendEmail (EmptyRequest) returns (OperationStatus) {}
+}
+
+// Request Messages
+message EmptyRequest {}
+
+// Response
+message OperationStatus {
+  string status = 1;
+}
