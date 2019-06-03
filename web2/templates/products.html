@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<head>
+  <title>Docker Compose Demo</title>
+</head>
+<body>
+  {% for i in response.data %}
+  {{i.name}} {{i.price}} {{i.quantity}}
+  <br>
+  {% endfor %}
+</body>
+</html>

@@ -6,7 +6,7 @@ services:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_DATABASE: 'simple_web'
+      MYSQL_DATABASE: 'compose-demo-product'
       MYSQL_USER: 'root'
       MYSQL_PASSWORD: ''
       MYSQL_ROOT_PASSWORD: ''
@@ -21,17 +21,38 @@ services:
       context: web2
     restart: always
     environment:
-      EMAIL_SERVER_PORT: 'service:50053'
+      EMAIL_SERVER_PORT: 'email_service:50053'
+      PRODUCT_SERVER_PORT: 'product_service:50055'
       FLASK_ENV: 'development'
     volumes:
       - .:/code
     ports:
-      - "5000:5000"
+      - "5001:5000"
     command: >
       sh -c "cd web2 &&
              python3 app.py"
 
-  service:
+  product_service:
+    build:
+      context: product_service
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      PRODUCT_SERVICE_DB_HOST: 'mysql:3306'
+      PRODUCT_SERVICE_DB_NAME: 'compose-demo-product'
+      PRODUCT_SERVICE_DB_USER: 'root'
+      PRODUCT_SERVICE_DB_PASSWORD: ''
+    volumes:
+      - .:/code
+    ports:
+      - "50055:50055"
+    depends_on:
+      - mysql
+    command: >
+      sh -c "cd product_service &&
+             python3 serve.py"
+
+  email_service:
     build:
       context: email_service
       dockerfile: Dockerfile
@@ -40,8 +61,6 @@ services:
       - .:/code
     ports:
       - "50053:50053"
-    depends_on:
-      - mysql
     command: >
       sh -c "cd email_service &&
              python3 serve.py"

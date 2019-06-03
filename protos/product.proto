@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option optimize_for = SPEED;
+
+package core.product;
+
+service ProductAPI {
+  rpc GetAllProducts (EmptyRequest) returns (Products) {}
+}
+
+// Request Messages
+message EmptyRequest {}
+
+// Response
+message Product {
+  string name = 1;
+  string price = 2;
+  int64 quantity = 3;
+}
+
+message Products {
+  repeated Product data = 1;
+}
